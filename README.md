@@ -29,10 +29,16 @@ Enable SOTA Text Extraction (GLiNER + REBEL) and Table Extraction:
 python3 scripts/kag_poc.py --gliner --rebel --csv
 ```
 
+Generate HTML Visualization:
+```bash
+python3 scripts/kag_poc.py --html
+```
+
 Outputs:
 - `output/nodes.json`
 - `output/edges.json`
 - `output/graph.json`
+- `output/graph.html` (interactive visualization)
 - `output/report.md`
 
 ## Query a term
