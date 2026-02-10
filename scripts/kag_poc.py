@@ -29,6 +29,11 @@ try:
 except Exception:
     pd = None
 
+try:
+    from pyvis.network import Network
+except Exception:
+    Network = None
+
 from llm_client import extract_relations as llm_extract_relations
 
 
@@ -595,7 +600,45 @@ def build_graph(input_root: str, context: ExtractionContext) -> Graph:
     return graph
 
 
-def write_outputs(graph: Graph, out_dir: str) -> None:
+def visualize_graph(graph: Graph, output_file: str) -> None:
+    if Network is None:
+        print("Note: pyvis not installed. Install with `pip install pyvis` to generate HTML graph.")
+        return
+
+    net = Network(height="750px", width="100%", bgcolor="#222222", font_color="white", select_menu=True, filter_menu=True)
+
+    # Map types to colors/shapes
+    # Common types: File, Section, Term, Entity, Class, Function, Method, Module, Symbol, Table, Column
+    color_map = {
+        "File": "#e0e0e0",     # Grey
+        "Section": "#f5f5f5",  # Light grey
+        "Term": "#97c2fc",     # Blue
+        "Entity": "#fb7e81",   # Red
+        "Class": "#ffff00",    # Yellow
+        "Function": "#7be141", # Green
+        "Method": "#7be141",   # Green
+        "Module": "#ffa807",   # Orange
+        "Table": "#eb7df4",    # Magenta
+        "Column": "#ad85e4",   # Purple
+    }
+
+    # Add nodes
+    for node in graph.nodes:
+        color = color_map.get(node.type, "#97c2fc")
+        title = "\n".join([f"{k}: {v}" for k, v in node.attrs.items()])
+        net.add_node(node.id, label=node.label, title=title, color=color, group=node.type)
+
+    # Add edges
+    for edge in graph.edges:
+        title = "\n".join([f"{k}: {v}" for k, v in edge.attrs.items()])
+        net.add_edge(edge.source, edge.target, title=edge.type, label=edge.type)
+
+    net.barnes_hut()
+    net.save_graph(output_file)
+    print(f"Graph visualization saved to: {output_file}")
+
+
+def write_outputs(graph: Graph, out_dir: str, generate_html: bool = False) -> None:
     os.makedirs(out_dir, exist_ok=True)
 
     nodes_path = os.path.join(out_dir, "nodes.json")
@@ -623,6 +666,10 @@ def write_outputs(graph: Graph, out_dir: str) -> None:
         for edge in graph.edges[:15]:
             f.write(f"- {edge.type}: {edge.source} -> {edge.target}\n")
 
+    if generate_html:
+        html_path = os.path.join(out_dir, "graph.html")
+        visualize_graph(graph, html_path)
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build a Knowledge-Augmented Graph (KAG) POC")
@@ -632,6 +679,7 @@ def main() -> None:
     parser.add_argument("--gliner", action="store_true", help="Enable GLiNER extraction (SOTA NER)")
     parser.add_argument("--rebel", action="store_true", help="Enable REBEL relation extraction (SOTA RE)")
     parser.add_argument("--csv", action="store_true", help="Enable CSV table extraction")
+    parser.add_argument("--html", action="store_true", help="Generate HTML graph visualization (requires pyvis)")
     parser.add_argument("--llm", action="store_true", help="Enable LLM relation extraction")
     parser.add_argument("--llm-max-calls", type=int, default=5, help="Max LLM calls per run")
     parser.add_argument(
@@ -683,7 +731,7 @@ def main() -> None:
         context.notes.append(model_err)
 
     graph = build_graph(os.path.abspath(args.input), context)
-    write_outputs(graph, os.path.abspath(args.out))
+    write_outputs(graph, os.path.abspath(args.out), generate_html=args.html)
     print(f"Graph built: {len(graph.nodes)} nodes, {len(graph.edges)} edges")
     print(f"Output: {os.path.abspath(args.out)}")
     if context.notes:

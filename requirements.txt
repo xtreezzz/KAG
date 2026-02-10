@@ -3,3 +3,4 @@ gliner
 transformers
 torch
 pandas
+pyvis
