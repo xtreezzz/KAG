@@ -14,6 +14,21 @@ try:
 except Exception:
     spacy = None
 
+try:
+    import gliner
+except Exception:
+    gliner = None
+
+try:
+    import transformers
+except Exception:
+    transformers = None
+
+try:
+    import pandas as pd
+except Exception:
+    pd = None
+
 from llm_client import extract_relations as llm_extract_relations
 
 
@@ -70,8 +85,12 @@ class ExtractionContext:
     nlp: Optional[object]
     ner_enabled: bool
     llm_enabled: bool
+    csv_enabled: bool
     llm_calls_left: int
     spacy_model: Optional[str] = None
+    gliner_model: Optional[object] = None
+    rebel_model: Optional[object] = None
+    rebel_tokenizer: Optional[object] = None
     notes: List[str] = field(default_factory=list)
 
 
@@ -124,9 +143,9 @@ def extract_markdown_terms(text: str) -> Dict[str, List[str]]:
 
 def sanitize_relation(label: str) -> str:
     cleaned = label.strip().lower()
-    cleaned = re.sub(r"[^a-z0-9_\\- ]+", "", cleaned)
+    cleaned = re.sub(r"[^a-z0-9_ \-]+", "", cleaned)
     cleaned = cleaned.replace("-", "_")
-    cleaned = re.sub(r"\\s+", "_", cleaned)
+    cleaned = re.sub(r"\s+", "_", cleaned)
     return cleaned or "related_to"
 
 
@@ -150,7 +169,8 @@ def load_spacy_model(models: List[str]) -> Tuple[Optional[object], Optional[str]
             continue
         try:
             return spacy.load(model), model, None
-        except Exception:
+        except Exception as e:
+            print(f"REBEL ERROR: {e}")
             continue
     return None, None, f"spaCy models not available: {', '.join(models)}"
 
@@ -183,10 +203,126 @@ def extract_llm_relations(graph: Graph, text: str, terms: List[str], source_id: 
     for head, rel, tail in triples:
         head_id = graph.add_node("Term", head)
         tail_id = graph.add_node("Term", tail)
-        graph.add_edge(head_id, tail_id, sanitize_relation(rel), source="llm")
+        graph.add_edge(head_id, tail_id, sanitize_relation(rel), provenance="llm")
         graph.add_edge(source_id, head_id, "mentions")
         graph.add_edge(source_id, tail_id, "mentions")
     context.llm_calls_left -= 1
+
+
+def extract_gliner_entities(graph: Graph, text: str, source_id: int, context: ExtractionContext) -> List[str]:
+    if context.gliner_model is None:
+        return []
+
+    try:
+        # Standard labels for general knowledge
+        labels = ["Person", "Organization", "Location", "Date", "Event", "Concept", "Technology", "Programming Language"]
+        entities = context.gliner_model.predict_entities(text, labels, threshold=0.5)
+    except Exception as e:
+        print(f"GLiNER error: {e}")
+        return []
+
+    terms: List[str] = []
+    for ent in entities:
+        label = normalize_term(ent["text"])
+        if not label:
+            continue
+        ent_type = ent["label"]
+        # Map GLiNER labels to our node types if needed, or keep as Entity
+        # We can store the detailed type in attributes
+        ent_id = graph.add_node("Entity", label, ner_label=ent_type, source="gliner")
+        graph.add_edge(source_id, ent_id, "mentions")
+        terms.append(label)
+    return terms
+
+
+def extract_rebel_relations(graph: Graph, text: str, source_id: int, context: ExtractionContext) -> None:
+    if context.rebel_model is None or context.rebel_tokenizer is None:
+        return
+
+    # REBEL works best on sentences or small chunks. Processing full file might be too much.
+    # We'll split by newlines for simplicity or process the whole text if small.
+    # Given REBEL limits, let's try processing chunks of 512 chars roughly.
+    # For this POC, we'll try to process line by line or paragraph.
+
+    lines = [line.strip() for line in text.split("\n") if len(line.strip()) > 20]
+
+    for line in lines:
+        try:
+            # Tokenize
+            model_inputs = context.rebel_tokenizer(line, max_length=256, padding=True, truncation=True, return_tensors='pt')
+            # Generate
+            generated_tokens = context.rebel_model.generate(
+                model_inputs["input_ids"],
+                attention_mask=model_inputs["attention_mask"],
+                max_length=256,
+            )
+            # Decode keeping special tokens
+            extracted_text = context.rebel_tokenizer.batch_decode(generated_tokens, skip_special_tokens=False)[0]
+
+            # Simple parsing of REBEL output format
+            # The format is typically: <triplet> head <subj> tail <obj> relation
+            # But Babelscape/rebel-large often outputs: head <tail> tail <relation> relation ...
+            # We will use a regex to find triplets.
+
+            # This regex is an approximation of REBEL's output decoding
+            # A more robust decoder is complex, but this serves the POC.
+            # Pattern: matches "Subject <tail> Object <relation> Relation"
+
+            # Split by <triplet> if present, or just parse the string
+            # Let's assume the model is fine-tuned to output:
+            # head <tail> tail <relation> relation <tail> ...
+
+            # We will use a simplified parsing logic for this SOTA demo
+            triplets = []
+
+            # Helper to extract triplets from the generated string
+            def parse_rebel_output(generated: str):
+                triplets = []
+                # Split by ' <triplet> ' which separates multiple relations in some versions
+                # Or just scan linearly.
+                # Common pattern: S <subj> O <obj> R <triplet> ... (REBEL specific tokens)
+                # But when using pipeline, we get decoded text.
+                # The tokens are often: <head>, <tail>, <relation> which might be decoded as text.
+                # Actually, Babelscape/rebel-large tokenizer handles special tokens.
+                # If we use pipeline, we might see "<head> ... <tail> ... <relation> ..." in text.
+
+                # Regex for: ... <subj> ... <obj> ...
+                # Let's look for the tokens as text
+                parts = re.split(r"<triplet>", generated)
+                for part in parts:
+                    # Look for <subj> and <obj>
+                    # Actually, the model uses: <head> ... <tail> ... <relation> ...
+                    # Or sometimes just textual separators depending on version.
+                    # Babelscape/rebel-large typically outputs:
+                    # text with <triplet> separator.
+                    # Inside triplet: subject <subj> object <obj> relation
+
+                    if "<subj>" in part and "<obj>" in part:
+                        try:
+                            s_part, rest = part.split("<subj>", 1)
+                            o_part, r_part = rest.split("<obj>", 1)
+                            subj = s_part.strip()
+                            obj = o_part.strip()
+                            rel = r_part.strip()
+                            triplets.append((subj, rel, obj))
+                        except ValueError:
+                            continue
+                return triplets
+
+            # Note: The above is one variant. Let's try to be robust.
+            # If the tokenizer didn't decode special tokens, we might see raw IDs, but pipeline decodes.
+            # Check for <triplet>, <subj>, <obj>.
+            found = parse_rebel_output(extracted_text)
+            for head, rel, tail in found:
+                head_id = graph.add_node("Term", normalize_term(head))
+                tail_id = graph.add_node("Term", normalize_term(tail))
+                graph.add_edge(head_id, tail_id, sanitize_relation(rel), provenance="rebel")
+                graph.add_edge(source_id, head_id, "mentions")
+                graph.add_edge(source_id, tail_id, "mentions")
+
+        except Exception as e:
+            print(f"REBEL extraction failed: {e}")
+            continue
 
 
 def extract_from_markdown(graph: Graph, path: str, context: ExtractionContext) -> None:
@@ -225,6 +361,11 @@ def extract_from_markdown(graph: Graph, path: str, context: ExtractionContext) -
 
     ner_terms = extract_ner_entities(graph, text, file_id, context)
     term_list.extend(ner_terms)
+
+    gliner_terms = extract_gliner_entities(graph, text, file_id, context)
+    term_list.extend(gliner_terms)
+
+    extract_rebel_relations(graph, text, file_id, context)
     extract_llm_relations(graph, text, term_list, file_id, context)
 
 
@@ -377,6 +518,62 @@ def extract_from_sql(graph: Graph, path: str, context: ExtractionContext) -> Non
                 graph.add_edge(table_id, col_id, "has_column")
 
 
+def extract_from_csv(graph: Graph, path: str, context: ExtractionContext) -> None:
+    if not context.csv_enabled or pd is None:
+        return
+
+    try:
+        df = pd.read_csv(path)
+    except Exception as e:
+        print(f"Failed to read CSV {path}: {e}")
+        return
+
+    table_name = os.path.splitext(os.path.basename(path))[0]
+    file_id = graph.add_node("File", path, scope=path)
+    table_id = graph.add_node("Table", table_name)
+    graph.add_edge(table_id, file_id, "defined_in")
+
+    # Heuristic for primary key: first column or column with "id" or "name"
+    pk_col = df.columns[0]
+    for col in df.columns:
+        if "id" in col.lower() or "name" in col.lower():
+            pk_col = col
+            break
+
+    # Add schema
+    for col in df.columns:
+        col_id = graph.add_node("Column", f"{table_name}.{col}")
+        graph.add_edge(table_id, col_id, "has_column")
+
+    # Add data (rows)
+    # We create a node for each row using the PK value
+    # And link it to the table
+    for idx, row in df.iterrows():
+        pk_val = str(row[pk_col]).strip()
+        if not pk_val:
+            continue
+
+        # Row entity
+        # Use table_name as scope to avoid ID collisions between tables
+        row_id = graph.add_node("Entity", pk_val, scope=table_name, type=table_name)
+        graph.add_edge(row_id, table_id, "contained_in")
+
+        # Properties
+        for col in df.columns:
+            if col == pk_col:
+                continue
+            val = str(row[col]).strip()
+            if val and val.lower() != "nan" and val.lower() != "none":
+                # We can either create a value node or an attribute.
+                # For KAG, often everything is a node.
+                # Let's create a Value node if it looks like an entity or Term,
+                # or just an attribute edge if it's a literal?
+                # The current graph supports attrs on nodes/edges.
+                # But to enable graph traversal, nodes are better.
+                val_id = graph.add_node("Term", val)
+                graph.add_edge(row_id, val_id, sanitize_relation(col))
+
+
 def build_graph(input_root: str, context: ExtractionContext) -> Graph:
     graph = Graph()
 
@@ -391,6 +588,9 @@ def build_graph(input_root: str, context: ExtractionContext) -> Graph:
 
     for path in iter_files(input_root, [".sql"]):
         extract_from_sql(graph, path, context)
+
+    for path in iter_files(input_root, [".csv"]):
+        extract_from_csv(graph, path, context)
 
     return graph
 
@@ -429,6 +629,9 @@ def main() -> None:
     parser.add_argument("--input", default=os.path.join(os.path.dirname(__file__), "..", "data"), help="Input root")
     parser.add_argument("--out", default=os.path.join(os.path.dirname(__file__), "..", "output"), help="Output directory")
     parser.add_argument("--ner", action="store_true", help="Enable spaCy NER extraction")
+    parser.add_argument("--gliner", action="store_true", help="Enable GLiNER extraction (SOTA NER)")
+    parser.add_argument("--rebel", action="store_true", help="Enable REBEL relation extraction (SOTA RE)")
+    parser.add_argument("--csv", action="store_true", help="Enable CSV table extraction")
     parser.add_argument("--llm", action="store_true", help="Enable LLM relation extraction")
     parser.add_argument("--llm-max-calls", type=int, default=5, help="Max LLM calls per run")
     parser.add_argument(
@@ -440,12 +643,41 @@ def main() -> None:
 
     models = [m.strip() for m in args.spacy_models.split(",") if m.strip()]
     nlp, model_name, model_err = load_spacy_model(models) if args.ner else (None, None, None)
+
+    gliner_model = None
+    if args.gliner:
+        if gliner is None:
+            print("Note: GLiNER not installed. Install with `pip install gliner`")
+        else:
+            try:
+                print("Loading GLiNER model...")
+                gliner_model = gliner.GLiNER.from_pretrained("urchade/gliner_small-v2.1")
+            except Exception as e:
+                print(f"Failed to load GLiNER: {e}")
+
+    rebel_model = None
+    rebel_tokenizer = None
+    if args.rebel:
+        if transformers is None:
+            print("Note: Transformers not installed. Install with `pip install transformers`")
+        else:
+            try:
+                print("Loading REBEL model...")
+                rebel_tokenizer = transformers.AutoTokenizer.from_pretrained("Babelscape/rebel-large")
+                rebel_model = transformers.AutoModelForSeq2SeqLM.from_pretrained("Babelscape/rebel-large")
+            except Exception as e:
+                print(f"Failed to load REBEL: {e}")
+
     context = ExtractionContext(
         nlp=nlp,
         ner_enabled=args.ner and nlp is not None,
         llm_enabled=args.llm,
+        csv_enabled=args.csv,
         llm_calls_left=max(args.llm_max_calls, 0),
         spacy_model=model_name,
+        gliner_model=gliner_model,
+        rebel_model=rebel_model,
+        rebel_tokenizer=rebel_tokenizer,
     )
     if args.ner and nlp is None and model_err:
         context.notes.append(model_err)
