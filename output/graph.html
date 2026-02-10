@@ -1,0 +1,538 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+                <link href="lib/tom-select/tom-select.css" rel="stylesheet">
+                <script src="lib/tom-select/tom-select.complete.min.js"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+                <div id="select-menu" class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-10 pb-2">
+                            <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="selectNode([value]);"
+                            id="select-node"
+                            placeholder="Select node..."
+                            >
+                                <option selected>Select a Node by ID</option>
+
+                                    <option value="1">1</option>
+
+                                    <option value="2">2</option>
+
+                                    <option value="3">3</option>
+
+                                    <option value="4">4</option>
+
+                                    <option value="5">5</option>
+
+                                    <option value="6">6</option>
+
+                                    <option value="7">7</option>
+
+                                    <option value="8">8</option>
+
+                                    <option value="9">9</option>
+
+                                    <option value="10">10</option>
+
+                                    <option value="11">11</option>
+
+                                    <option value="12">12</option>
+
+                                    <option value="13">13</option>
+
+                                    <option value="14">14</option>
+
+                                    <option value="15">15</option>
+
+                                    <option value="16">16</option>
+
+                                    <option value="17">17</option>
+
+                                    <option value="18">18</option>
+
+                                    <option value="19">19</option>
+
+                                    <option value="20">20</option>
+
+                                    <option value="21">21</option>
+
+                                    <option value="22">22</option>
+
+                                    <option value="23">23</option>
+
+                                    <option value="24">24</option>
+
+                                    <option value="25">25</option>
+
+                                    <option value="26">26</option>
+
+                                    <option value="27">27</option>
+
+                                    <option value="28">28</option>
+
+                                    <option value="29">29</option>
+
+                                    <option value="30">30</option>
+
+                                    <option value="31">31</option>
+
+                                    <option value="32">32</option>
+
+                                    <option value="33">33</option>
+
+                                    <option value="34">34</option>
+
+                                    <option value="35">35</option>
+
+                                    <option value="36">36</option>
+
+                                    <option value="37">37</option>
+
+                                    <option value="38">38</option>
+
+                                    <option value="39">39</option>
+
+                                    <option value="40">40</option>
+
+                                    <option value="41">41</option>
+
+                                    <option value="42">42</option>
+
+                                    <option value="43">43</option>
+
+                                    <option value="44">44</option>
+
+                                    <option value="45">45</option>
+
+                                    <option value="46">46</option>
+
+                                    <option value="47">47</option>
+
+                                    <option value="48">48</option>
+
+                                    <option value="49">49</option>
+
+                                    <option value="50">50</option>
+
+                                    <option value="51">51</option>
+
+                                    <option value="52">52</option>
+
+                                    <option value="53">53</option>
+
+                                    <option value="54">54</option>
+
+                                    <option value="55">55</option>
+
+                                    <option value="56">56</option>
+
+                                    <option value="57">57</option>
+
+                                    <option value="58">58</option>
+
+                                    <option value="59">59</option>
+
+                                    <option value="60">60</option>
+
+                                    <option value="61">61</option>
+
+                                    <option value="62">62</option>
+
+                                    <option value="63">63</option>
+
+                                    <option value="64">64</option>
+
+                                    <option value="65">65</option>
+
+                                    <option value="66">66</option>
+
+                                    <option value="67">67</option>
+
+                                    <option value="68">68</option>
+
+                                    <option value="69">69</option>
+
+                                    <option value="70">70</option>
+
+                                    <option value="71">71</option>
+
+                                    <option value="72">72</option>
+
+                                    <option value="73">73</option>
+
+                                    <option value="74">74</option>
+
+                                    <option value="75">75</option>
+
+                                    <option value="76">76</option>
+
+                                    <option value="77">77</option>
+
+                                    <option value="78">78</option>
+
+                                    <option value="79">79</option>
+
+                                    <option value="80">80</option>
+
+                                    <option value="81">81</option>
+
+                                    <option value="82">82</option>
+
+                                    <option value="83">83</option>
+
+                                    <option value="84">84</option>
+
+                                    <option value="85">85</option>
+
+                                    <option value="86">86</option>
+
+                                    <option value="87">87</option>
+
+                            </select>
+                        </div>
+                        <div class="col-2 pb-2">
+                            <button type="button" class="btn btn-primary btn-block" onclick="neighbourhoodHighlight({nodes: []});">Reset Selection</button>
+                        </div>
+                    </div>
+                </div>
+
+
+              <div id="filter-menu" class="card-header">
+                <div class="row no-gutters">
+                  <div class="col-3 pb-2">
+                    <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="updateFilter(value, 'item')"
+                            id="select-item"
+                        >
+                        <option value="">Select a network item</option>
+                        <option value="edge">edge</option>
+                        <option value="node">node</option>
+                    </select>
+                  </div>
+                  <div class="col-3 pb-2">
+                    <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="updateFilter(value, 'property')"
+                            id="select-property"
+                        >
+                        <option value="">Select a property...</option>
+                    </select>
+                  </div>
+                  <div class="col-3 pb-2">
+                    <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            id="select-value"
+                        >
+                        <option value="">Select value(s)...</option>
+                    </select>
+                  </div>
+                  <div class="col-1 pb-2">
+                    <button type="button" class="btn btn-primary btn-block" onclick="highlightFilter(filter);">Filter</button>
+                  </div>
+                  <div class="col-2 pb-2">
+                    <button type="button" class="btn btn-primary btn-block" onclick="clearFilter(true)">Reset Selection</button>
+                  </div>
+                </div>
+              </div>
+
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+                  new TomSelect("#select-node",{
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      }
+                  });
+
+
+
+                  // explicitly using onItemAdd and this function as we need to save multiple values
+                  let updateValueFilter = function() {
+                      return function () {
+                      filter['value'].push(arguments[0])
+                      }
+                  }
+
+                  let valueControl = new TomSelect("#select-value",{
+                      maxItems: null,
+                      valueField: 'id',
+                      labelField: 'title',
+                      searchField: 'title',
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      },
+                      onItemAdd: updateValueFilter()
+                  });
+
+                  let addValues = function() {
+                      return function () {
+                          // clear the current value options and add the selected attribute values
+                          // tom-select handles duplicates
+                          let selectedProperty = arguments[0];
+                          valueControl.clear();
+                          valueControl.clearOptions();
+                          filter['value'] = []
+                          if (filter['item'] === 'node') {
+                              for (let each in allNodes) {
+                                  valueControl.addOption({
+                                      id:allNodes[each][selectedProperty],
+                                      title:allNodes[each][selectedProperty]
+                                  })
+                              }
+                          }
+                          else if (filter['item'] === 'edge') {
+                              for (let each in allEdges) {
+                                  valueControl.addOption({
+                                      id:allEdges[each][selectedProperty],
+                                      title:allEdges[each][selectedProperty]
+                                  })
+                              }
+                          }
+                      }
+                  };
+
+                  let propControl = new TomSelect("#select-property",{
+                      valueField: 'id',
+                      labelField: 'title',
+                      searchField: 'title',
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      },
+                      onItemAdd: addValues()
+                  });
+
+                  let addProperties = function() {
+                      return function () {
+                          // loops through the selected network item and adds the attributes to dropdown
+                          // tom-select handles duplicates
+                          clearFilter(false)
+                          if (arguments[0] === 'edge') {
+                              for (let each in allEdges) {
+                                  if (allEdges.hasOwnProperty(each)) {
+                                      for (let eachProp in allEdges[each]) {
+                                          if (allEdges[each].hasOwnProperty(eachProp)) {
+                                              propControl.addOption({id: eachProp, title: eachProp})
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                          else if (arguments[0] === 'node') {
+                              for (let each in allNodes) {
+                                  if (allNodes.hasOwnProperty(each)) {
+                                      for (let eachProp in allNodes[each]) {
+                                          if (allNodes[each].hasOwnProperty(eachProp)
+                                              && (eachProp !== 'hidden' && eachProp !== 'savedLabel'
+                                                  && eachProp !== 'hiddenLabel')) {
+                                              propControl.addOption({id: eachProp, title: eachProp})
+
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  };
+
+                  let itemControl = new TomSelect("#select-item",{
+                      create: false,
+                      sortField:{
+                          field: "text",
+                          direction: "asc"
+                      },
+                      onItemAdd: addProperties()
+                  });
+
+                  function clearFilter(reset) {
+                      // utility function to clear all the selected filter options
+                      // if reset is set to true, the existing filter will be removed
+                      // else, only the dropdown options are cleared
+                      propControl.clear();
+                      propControl.clearOptions();
+                      valueControl.clear();
+                      valueControl.clearOptions();
+                      filter = {
+                          item : '',
+                          property : '',
+                          value : []
+                      }
+                      if (reset) {
+                          itemControl.clear();
+                          filterHighlight({nodes: []})
+                      }
+                  }
+
+                  function updateFilter(value, key) {
+                      // key could be 'item' or 'property' and value is as selected in dropdown
+                      filter[key] = value
+                  }
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"color": "white"}, "group": "File", "id": 1, "label": "/app/data/text/overview.md", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Section", "id": 2, "label": "Context Mining for LLM", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Section", "id": 3, "label": "Domain snapshot", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Section", "id": 4, "label": "Notes (RU)", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 5, "label": "Knowledge-Augmented Graph (KAG)", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 6, "label": "entities", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 7, "label": "definitions", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 8, "label": "relationships", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 9, "label": "Customer", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 10, "label": "Order", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 11, "label": "OrderItem", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 12, "label": "Product", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 13, "label": "Churn", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 14, "label": "event when a Customer stops placing Orders for 90 days", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 15, "label": "Retention", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 16, "label": "inverse of churn", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "File", "id": 17, "label": "/app/data/text/architecture.md", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Section", "id": 18, "label": "Architecture", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Section", "id": 19, "label": "Ingestion", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Section", "id": 20, "label": "Extraction", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 21, "label": "Term", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "File", "id": 22, "label": "/app/data/text/glossary.md", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Section", "id": 23, "label": "Glossary", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 24, "label": "Entity", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 25, "label": "Transaction", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 26, "label": "LineItem", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 27, "label": "CatalogItem", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 28, "label": "Market", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Term", "id": 29, "label": "Revenue", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "File", "id": 30, "label": "/app/data/code/churn.py", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Module", "id": 31, "label": "datetime", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Module", "id": 32, "label": "typing", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Class", "id": 33, "label": "Customer", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Function", "id": 34, "label": "__init__", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Class", "id": 35, "label": "Order", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Function", "id": 36, "label": "is_churned", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Symbol", "id": 37, "label": "timedelta", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Function", "id": 38, "label": "compute_churn", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Symbol", "id": 39, "label": "max", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Symbol", "id": 40, "label": "get", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Symbol", "id": 41, "label": "is_churned", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Function", "id": 42, "label": "retention_rate", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Symbol", "id": 43, "label": "len", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Symbol", "id": 44, "label": "sum", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Symbol", "id": 45, "label": "values", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "File", "id": 46, "label": "/app/data/code/OrderService.java", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Class", "id": 47, "label": "OrderService", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 48, "label": "createOrder", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 49, "label": "Order", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 50, "label": "calculateTotal", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "File", "id": 51, "label": "/app/data/code/Models.java", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Class", "id": 52, "label": "Product", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Class", "id": 53, "label": "OrderItem", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 54, "label": "Customer", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 55, "label": "getId", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 56, "label": "Product", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 57, "label": "getSku", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 58, "label": "getPrice", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 59, "label": "OrderItem", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 60, "label": "getProduct", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 61, "label": "getQuantity", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 62, "label": "addItem", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 63, "label": "getItems", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Method", "id": 64, "label": "getCustomerId", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Class", "id": 65, "label": "ArrayList", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "File", "id": 66, "label": "/app/data/sql/commerce_schema.sql", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Table", "id": 67, "label": "customers", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Column", "id": 68, "label": "customers.customer_id", "shape": "dot", "title": "data_type: VARCHAR(32)"}, {"font": {"color": "white"}, "group": "Column", "id": 69, "label": "customers.created_at", "shape": "dot", "title": "data_type: TIMESTAMP"}, {"font": {"color": "white"}, "group": "Column", "id": 70, "label": "customers.email", "shape": "dot", "title": "data_type: TEXT"}, {"font": {"color": "white"}, "group": "Column", "id": 71, "label": "customers.country", "shape": "dot", "title": "data_type: TEXT"}, {"font": {"color": "white"}, "group": "Table", "id": 72, "label": "products", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Column", "id": 73, "label": "products.product_id", "shape": "dot", "title": "data_type: VARCHAR(32)"}, {"font": {"color": "white"}, "group": "Column", "id": 74, "label": "products.sku", "shape": "dot", "title": "data_type: TEXT"}, {"font": {"color": "white"}, "group": "Column", "id": 75, "label": "products.name", "shape": "dot", "title": "data_type: TEXT"}, {"font": {"color": "white"}, "group": "Column", "id": 76, "label": "products.price", "shape": "dot", "title": "data_type: NUMERIC(10"}, {"font": {"color": "white"}, "group": "Table", "id": 77, "label": "orders", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Column", "id": 78, "label": "orders.order_id", "shape": "dot", "title": "data_type: VARCHAR(32)"}, {"font": {"color": "white"}, "group": "Column", "id": 79, "label": "orders.customer_id", "shape": "dot", "title": "data_type: VARCHAR(32)"}, {"font": {"color": "white"}, "group": "Column", "id": 80, "label": "orders.created_at", "shape": "dot", "title": "data_type: TIMESTAMP"}, {"font": {"color": "white"}, "group": "Column", "id": 81, "label": "orders.status", "shape": "dot", "title": "data_type: TEXT"}, {"font": {"color": "white"}, "group": "Table", "id": 82, "label": "order_items", "shape": "dot", "title": ""}, {"font": {"color": "white"}, "group": "Column", "id": 83, "label": "order_items.order_item_id", "shape": "dot", "title": "data_type: VARCHAR(32)"}, {"font": {"color": "white"}, "group": "Column", "id": 84, "label": "order_items.order_id", "shape": "dot", "title": "data_type: VARCHAR(32)"}, {"font": {"color": "white"}, "group": "Column", "id": 85, "label": "order_items.product_id", "shape": "dot", "title": "data_type: VARCHAR(32)"}, {"font": {"color": "white"}, "group": "Column", "id": 86, "label": "order_items.quantity", "shape": "dot", "title": "data_type: INTEGER"}, {"font": {"color": "white"}, "group": "Column", "id": 87, "label": "order_items.price", "shape": "dot", "title": "data_type: NUMERIC(10"}]);
+                  edges = new vis.DataSet([{"from": 2, "label": "defined_in", "title": "defined_in", "to": 1}, {"from": 3, "label": "defined_in", "title": "defined_in", "to": 1}, {"from": 4, "label": "defined_in", "title": "defined_in", "to": 1}, {"from": 1, "label": "mentions", "title": "mentions", "to": 5}, {"from": 1, "label": "mentions", "title": "mentions", "to": 6}, {"from": 1, "label": "mentions", "title": "mentions", "to": 7}, {"from": 1, "label": "mentions", "title": "mentions", "to": 8}, {"from": 1, "label": "mentions", "title": "mentions", "to": 9}, {"from": 1, "label": "mentions", "title": "mentions", "to": 10}, {"from": 1, "label": "mentions", "title": "mentions", "to": 11}, {"from": 1, "label": "mentions", "title": "mentions", "to": 12}, {"from": 13, "label": "is_a", "title": "is_a", "to": 14}, {"from": 1, "label": "defines", "title": "defines", "to": 13}, {"from": 15, "label": "is_a", "title": "is_a", "to": 16}, {"from": 1, "label": "defines", "title": "defines", "to": 15}, {"from": 18, "label": "defined_in", "title": "defined_in", "to": 17}, {"from": 19, "label": "defined_in", "title": "defined_in", "to": 17}, {"from": 20, "label": "defined_in", "title": "defined_in", "to": 17}, {"from": 17, "label": "mentions", "title": "mentions", "to": 21}, {"from": 23, "label": "defined_in", "title": "defined_in", "to": 22}, {"from": 22, "label": "mentions", "title": "mentions", "to": 9}, {"from": 22, "label": "mentions", "title": "mentions", "to": 10}, {"from": 22, "label": "mentions", "title": "mentions", "to": 11}, {"from": 22, "label": "mentions", "title": "mentions", "to": 12}, {"from": 9, "label": "is_a", "title": "is_a", "to": 24}, {"from": 10, "label": "is_a", "title": "is_a", "to": 25}, {"from": 11, "label": "is_a", "title": "is_a", "to": 26}, {"from": 12, "label": "is_a", "title": "is_a", "to": 27}, {"from": 9, "label": "part_of", "title": "part_of", "to": 28}, {"from": 10, "label": "part_of", "title": "part_of", "to": 29}, {"from": 30, "label": "imports", "title": "imports", "to": 31}, {"from": 30, "label": "imports", "title": "imports", "to": 32}, {"from": 33, "label": "defined_in", "title": "defined_in", "to": 30}, {"from": 34, "label": "defined_in", "title": "defined_in", "to": 30}, {"from": 33, "label": "defines_method", "title": "defines_method", "to": 34}, {"from": 35, "label": "defined_in", "title": "defined_in", "to": 30}, {"from": 35, "label": "defines_method", "title": "defines_method", "to": 34}, {"from": 36, "label": "defined_in", "title": "defined_in", "to": 30}, {"from": 36, "label": "calls", "title": "calls", "to": 37}, {"from": 38, "label": "defined_in", "title": "defined_in", "to": 30}, {"from": 38, "label": "calls", "title": "calls", "to": 39}, {"from": 38, "label": "calls", "title": "calls", "to": 40}, {"from": 38, "label": "calls", "title": "calls", "to": 41}, {"from": 42, "label": "defined_in", "title": "defined_in", "to": 30}, {"from": 42, "label": "defines", "title": "defines", "to": 15}, {"from": 42, "label": "calls", "title": "calls", "to": 43}, {"from": 42, "label": "calls", "title": "calls", "to": 44}, {"from": 42, "label": "calls", "title": "calls", "to": 45}, {"from": 47, "label": "defined_in", "title": "defined_in", "to": 46}, {"from": 48, "label": "defined_in", "title": "defined_in", "to": 46}, {"from": 47, "label": "defines_method", "title": "defines_method", "to": 48}, {"from": 49, "label": "defined_in", "title": "defined_in", "to": 46}, {"from": 47, "label": "defines_method", "title": "defines_method", "to": 49}, {"from": 50, "label": "defined_in", "title": "defined_in", "to": 46}, {"from": 47, "label": "defines_method", "title": "defines_method", "to": 50}, {"from": 46, "label": "instantiates", "title": "instantiates", "to": 35}, {"from": 33, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 52, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 53, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 35, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 54, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 33, "label": "defines_method", "title": "defines_method", "to": 54}, {"from": 55, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 33, "label": "defines_method", "title": "defines_method", "to": 55}, {"from": 56, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 52, "label": "defines_method", "title": "defines_method", "to": 56}, {"from": 57, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 52, "label": "defines_method", "title": "defines_method", "to": 57}, {"from": 58, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 52, "label": "defines_method", "title": "defines_method", "to": 58}, {"from": 59, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 53, "label": "defines_method", "title": "defines_method", "to": 59}, {"from": 60, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 53, "label": "defines_method", "title": "defines_method", "to": 60}, {"from": 61, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 53, "label": "defines_method", "title": "defines_method", "to": 61}, {"from": 49, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 35, "label": "defines_method", "title": "defines_method", "to": 49}, {"from": 62, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 35, "label": "defines_method", "title": "defines_method", "to": 62}, {"from": 63, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 35, "label": "defines_method", "title": "defines_method", "to": 63}, {"from": 64, "label": "defined_in", "title": "defined_in", "to": 51}, {"from": 35, "label": "defines_method", "title": "defines_method", "to": 64}, {"from": 51, "label": "instantiates", "title": "instantiates", "to": 65}, {"from": 67, "label": "defined_in", "title": "defined_in", "to": 66}, {"from": 67, "label": "has_column", "title": "has_column", "to": 68}, {"from": 67, "label": "has_column", "title": "has_column", "to": 69}, {"from": 67, "label": "has_column", "title": "has_column", "to": 70}, {"from": 67, "label": "has_column", "title": "has_column", "to": 71}, {"from": 72, "label": "defined_in", "title": "defined_in", "to": 66}, {"from": 72, "label": "has_column", "title": "has_column", "to": 73}, {"from": 72, "label": "has_column", "title": "has_column", "to": 74}, {"from": 72, "label": "has_column", "title": "has_column", "to": 75}, {"from": 72, "label": "has_column", "title": "has_column", "to": 76}, {"from": 77, "label": "defined_in", "title": "defined_in", "to": 66}, {"from": 77, "label": "has_column", "title": "has_column", "to": 78}, {"from": 77, "label": "has_column", "title": "has_column", "to": 79}, {"from": 77, "label": "has_column", "title": "has_column", "to": 80}, {"from": 77, "label": "has_column", "title": "has_column", "to": 81}, {"from": 82, "label": "defined_in", "title": "defined_in", "to": 66}, {"from": 82, "label": "has_column", "title": "has_column", "to": 83}, {"from": 82, "label": "has_column", "title": "has_column", "to": 84}, {"from": 82, "label": "has_column", "title": "has_column", "to": 85}, {"from": 82, "label": "has_column", "title": "has_column", "to": 86}, {"from": 82, "label": "has_column", "title": "has_column", "to": 87}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+                    network.on("selectNode", neighbourhoodHighlight);
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
