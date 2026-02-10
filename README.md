@@ -16,12 +16,12 @@ from Markdown, Python/Java code, and PostgreSQL DDL.
 
 ## Run
 ```bash
-python3 /Users/family/Downloads/kag_poc/scripts/kag_poc.py
+python3 scripts/kag_poc.py
 ```
 
 Enable NER + LLM extraction:
 ```bash
-python3 /Users/family/Downloads/kag_poc/scripts/kag_poc.py --ner --llm
+python3 scripts/kag_poc.py --ner --llm
 ```
 
 Enable SOTA Text Extraction (GLiNER + REBEL) and Table Extraction:
@@ -43,7 +43,7 @@ Outputs:
 
 ## Query a term
 ```bash
-python3 /Users/family/Downloads/kag_poc/scripts/query_graph.py --term Customer
+python3 scripts/query_graph.py --term Customer
 ```
 
 ## Notes
