@@ -24,6 +24,11 @@ Enable NER + LLM extraction:
 python3 /Users/family/Downloads/kag_poc/scripts/kag_poc.py --ner --llm
 ```
 
+Enable SOTA Text Extraction (GLiNER + REBEL) and Table Extraction:
+```bash
+python3 scripts/kag_poc.py --gliner --rebel --csv
+```
+
 Outputs:
 - `output/nodes.json`
 - `output/edges.json`
@@ -36,7 +41,8 @@ python3 /Users/family/Downloads/kag_poc/scripts/query_graph.py --term Customer
 ```
 
 ## Notes
-- This is a pure-stdlib implementation (no external dependencies).
+- Basic functionality is pure-stdlib.
+- SOTA extraction requires `gliner`, `transformers`, `torch`, `pandas`.
 - The extraction is heuristic and intended only for MVP/POC exploration.
 - For production: plug in a proper NLP pipeline, entity linking, and a graph DB.
 

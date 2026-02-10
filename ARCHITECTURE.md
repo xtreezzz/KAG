@@ -23,7 +23,9 @@
    - токенизация/нормализация терминов
 3) Extraction (уровни сигнала)
    - L0: правила (definitions, part_of, is_a)
+   - L0: Table Extraction (CSV -> Graph schema/data)
    - L1: NER (spaCy) для Entity
+   - L1.5: SOTA NER (GLiNER) + Relation Extraction (REBEL)
    - L2: LLM relation extraction
 4) Graph Build
    - дедупликация узлов по (type,label)
@@ -60,7 +62,19 @@
 - найденные сущности → узлы Entity
 - связь `mentions` от источника (File/Class/Function) к Entity
 
-### 3) LLM relation extraction (L2)
+### 3) SOTA Extraction (L1.5)
+Используются opensource модели:
+- **GLiNER** (`--gliner`): Zero-shot NER для выделения сущностей (Person, Org, Loc, etc.).
+- **REBEL** (`--rebel`): End-to-end Relation Extraction для генерации троек (head, relation, tail).
+
+### 4) Table Extraction
+Обработка CSV файлов:
+- Таблица → узел `Table`
+- Колонки → узлы `Column`
+- Строки → узлы `Entity` (используя PK heuristic)
+- Связи `has_column`, `contained_in`, атрибуты.
+
+### 5) LLM relation extraction (L2)
 Опционально, включается флагом `--llm`.
 - запрос к OpenAI‑compatible endpoint через `scripts/llm_client.py`
 - LLM возвращает JSON со списком троек
